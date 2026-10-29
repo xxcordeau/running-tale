@@ -8,13 +8,14 @@ import com.runningtale.story.signal.TurnInfo
 /**
  * 기획안 "시연 계획"의 3분 데모 코스.
  *
- * 0:00 출발 → 0:30 가속 → 1:00 우회전 → 1:30 신호 대기(2:10 재출발) → 2:15 와이퍼 → 2:50 도착·주차
+ * 0:00 출발 → 0:30 가속 → 1:00 우회전 → 1:12 터널(1:23 통과) → 1:30 신호 대기(2:10 재출발) → 2:15 와이퍼 → 2:50 도착·주차
  */
 object DemoCourse {
     const val DURATION_MS = 180_000L
     private const val TURN_AT_S = 62.0
     private const val TURN_NOTICE_FROM_S = 45.0
     private const val PARK_AT_S = 170.5
+    private val TUNNEL_S = 72.0..<83.0
 
     fun snapshots(stepMs: Long = 200): List<DrivingSnapshot> {
         val times = (0..DURATION_MS step stepMs).toList()
@@ -36,7 +37,7 @@ object DemoCourse {
                 gear = if (s < 1 || s >= PARK_AT_S) Gear.P else Gear.D,
                 steeringAngleDeg = steeringAt(s),
                 wiperOn = s >= 135,
-                inTunnel = false,
+                inTunnel = s in TUNNEL_S,
                 nextTurn = if (s in TURN_NOTICE_FROM_S..<TURN_AT_S) {
                     TurnInfo(TurnDirection.RIGHT, (turnPoint - traveled[i]).toInt().coerceAtLeast(0))
                 } else null,

@@ -22,6 +22,7 @@ import android.car.hardware.property.CarPropertyManager
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import com.runningtale.story.signal.DrivingSignalSource
 import com.runningtale.story.signal.DrivingSnapshot
@@ -56,6 +57,11 @@ class PleosSignalSource(private val context: Context) : DrivingSignalSource {
     private val odometerSamples = ArrayDeque<Pair<Long, Float>>() // (시각 ms, 누적 km)
     private var maxRemainingM = 0
 
+    /** TBT 목록에 있는 다음 터널까지 거리(m). 없으면 null. */
+    private var tunnelAheadM: Double? = null
+    /** 터널에 들어간 시각(elapsedRealtime). 터널 밖이면 null. */
+    private var tunnelSince: Long? = null
+
     private val gearListener = object : GearSelectionListener {
         override fun onSelected(gear: VehicleGear?) = update { copy(gear = gear.toGear()) }
         override fun onFailed(e: Exception) = logFailure("gear", e)
@@ -71,7 +77,7 @@ class PleosSignalSource(private val context: Context) : DrivingSignalSource {
     private val distanceListener = object : DistanceDrivenListener {
         override fun onDistanceDrivenUpdated(km: Float?) {
             if (km == null) return
-            main.post { odometerSamples.addLast(System.currentTimeMillis() to km) }
+            main.post { odometerSamples.addLast(SystemClock.elapsedRealtime() to km) }
         }
         override fun onFailed(e: Exception) = logFailure("odometer", e)
     }
@@ -88,6 +94,8 @@ class PleosSignalSource(private val context: Context) : DrivingSignalSource {
     private val naviListener = object : NaviHelperEventListener {
         override fun onTBTInfo(list: List<TBTInfo>) {
             val next = list.firstOrNull { it.type.toDirection() != null }
+            val tunnelM = list.firstOrNull { it.type == TurnType.TURN_TUNNEL }?.distance
+            main.post { tunnelAheadM = tunnelM }
             update { copy(nextTurn = next?.let { TurnInfo(it.type.toDirection()!!, it.distance.toInt()) }) }
         }
         override fun onDrivingInfo(info: DrivingInfo) {
@@ -107,6 +115,7 @@ class PleosSignalSource(private val context: Context) : DrivingSignalSource {
                 }
             }
             navi?.runCatching { getTBTInfo() }
+            latest = latest.copy(inTunnel = updateTunnel())
             emit()
             main.postDelayed(this, TICK_MS)
         }
@@ -186,7 +195,7 @@ class PleosSignalSource(private val context: Context) : DrivingSignalSource {
 
     /** 최근 [ODOMETER_WINDOW_MS] 동안의 주행거리 변화로 구한 차속. 샘플이 없으면 null. */
     private fun odometerSpeedKmh(): Float? {
-        val now = System.currentTimeMillis()
+        val now = SystemClock.elapsedRealtime()
         while (odometerSamples.size > 1 && now - odometerSamples.first().first > ODOMETER_WINDOW_MS) {
             odometerSamples.removeFirst()
         }
@@ -199,6 +208,23 @@ class PleosSignalSource(private val context: Context) : DrivingSignalSource {
         return ((last.second - first.second) / hours).coerceAtLeast(0f)
     }
 
+    /**
+     * 터널 안인지. TBT에는 터널 입구까지 거리만 있고 길이는 없어서,
+     * 입구 [TUNNEL_ENTER_M] 안쪽이면 들어간 것으로 보고, 터널 안내가 목록에서 사라진 뒤
+     * 최소 [TUNNEL_MIN_MS]가 지나면 나온 것으로 본다 (동굴 장면이 너무 짧게 끝나지 않게).
+     */
+    private fun updateTunnel(): Boolean {
+        val now = SystemClock.elapsedRealtime()
+        val ahead = tunnelAheadM
+        val since = tunnelSince
+        if (since == null) {
+            if (ahead != null && ahead <= TUNNEL_ENTER_M) tunnelSince = now
+        } else if ((ahead == null || ahead > TUNNEL_ENTER_M) && now - since >= TUNNEL_MIN_MS) {
+            tunnelSince = null
+        }
+        return tunnelSince != null
+    }
+
     private fun update(change: DrivingSnapshot.() -> DrivingSnapshot) {
         main.post {
             latest = latest.change()
@@ -207,7 +233,7 @@ class PleosSignalSource(private val context: Context) : DrivingSignalSource {
     }
 
     private fun emit() {
-        latest = latest.copy(timestampMs = System.currentTimeMillis())
+        latest = latest.copy(timestampMs = SystemClock.elapsedRealtime())
         onSnapshot?.invoke(latest)
     }
 
@@ -219,6 +245,8 @@ class PleosSignalSource(private val context: Context) : DrivingSignalSource {
         const val TAG = "PleosSignalSource"
         const val TICK_MS = 500L
         const val ODOMETER_WINDOW_MS = 3_000L
+        const val TUNNEL_ENTER_M = 30.0
+        const val TUNNEL_MIN_MS = 20_000L
         val FRONT = WindowArea(WindowValue.FRONT_WINDSHIELD)
 
         /**
@@ -237,9 +265,9 @@ class PleosSignalSource(private val context: Context) : DrivingSignalSource {
         }
 
         fun TurnType.toDirection(): TurnDirection? = when (this) {
-            TurnType.TURN_RIGHT, TurnType.TURN_SHARP_R, TurnType.TURN_KEEP_R -> TurnDirection.RIGHT
-            TurnType.TURN_LEFT, TurnType.TURN_SHARP_L, TurnType.TURN_KEEP_L -> TurnDirection.LEFT
-            else -> null
+            TurnType.TURN_RIGHT, TurnType.TURN_SHARP_R -> TurnDirection.RIGHT
+            TurnType.TURN_LEFT, TurnType.TURN_SHARP_L -> TurnDirection.LEFT
+            else -> null // 차선 유지(KEEP)는 회전이 아니라 이야기에서 꺾지 않는다
         }
     }
 }

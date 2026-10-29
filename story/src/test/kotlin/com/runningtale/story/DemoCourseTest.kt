@@ -20,7 +20,7 @@ class DemoCourseTest {
     fun `데모 코스는 시연 계획 순서대로 사건을 낸다`() {
         val events = demoEvents().filterNot { it is DrivingEvent.Progress || it is DrivingEvent.SpeedChanged }
         assertEquals(
-            listOf("Departed", "TurnAhead", "Turned", "Stopped", "Resumed", "RainStarted", "Arrived"),
+            listOf("Departed", "TurnAhead", "Turned", "TunnelEntered", "TunnelExited", "Stopped", "Resumed", "RainStarted", "Arrived"),
             events.map { it::class.simpleName },
         )
         assertEquals(TurnDirection.RIGHT, events.filterIsInstance<DrivingEvent.Turned>().single().direction)
@@ -49,6 +49,6 @@ class DemoCourseTest {
         assertTrue(choiceSeen)
         assertTrue(engine.state.finished)
         assertEquals("별빛 성", engine.state.scene.title)
-        assertEquals(listOf("마을 들판", "꽃길", "깊은 숲", "용의 고개", "꽃길", "별빛 성"), engine.state.journey)
+        assertEquals(listOf("마을 들판", "꽃길", "깊은 숲", "반딧불 동굴", "꽃길", "용의 고개", "꽃길", "별빛 성"), engine.state.journey)
     }
 }

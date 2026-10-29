@@ -75,6 +75,11 @@ class MainActivity : Activity() {
         sceneTitle.visibility = View.GONE
         storyPanel.visibility = View.GONE
         stage.showHero(false)
+        // 차 신호 표시는 시연·점검용. 장면 제목을 길게 누르면 켜고 끈다.
+        sceneTitle.setOnLongClickListener {
+            signalOverlay.visibility = if (signalOverlay.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+            true
+        }
         findViewById<ImageButton>(R.id.startButton).setOnClickListener {
             startDrive(SimulatedSignalSource(DemoCourse.snapshots()))
         }
@@ -122,6 +127,8 @@ class MainActivity : Activity() {
         logo.visibility = View.GONE
         sceneTitle.visibility = View.VISIBLE
         storyPanel.visibility = View.VISIBLE
+        // 데모 코스에선 어떤 신호로 이야기가 흐르는지 보여 주고, 실제 주행에선 숨긴다.
+        signalOverlay.visibility = if (newSource is SimulatedSignalSource) View.VISIBLE else View.GONE
         render(engine.state)
         source = newSource.also { it.start(::onSnapshot) }
     }
