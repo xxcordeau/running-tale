@@ -1,4 +1,6 @@
 # 달리는 동화
+<img width="997" height="710" alt="image" src="https://github.com/user-attachments/assets/8c6601c0-83ce-4380-afae-7053ba5766c8" />
+
 
 **실제 주행 신호가 동화 속 사건이 되는 뒷좌석 키즈 앱** (Pleos Connect, 차량용 앱 개발 공모전 출품작)
 
