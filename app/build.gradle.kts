@@ -6,9 +6,32 @@ plugins {
     kotlin("android")
 }
 
+val local = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use(::load)
+}
+
 android {
     namespace = "com.runningtale.app"
     compileSdk = 35
+
+    // 릴리스 서명 키도 local.properties에만 둔다 (release.storeFile/storePassword/keyAlias/keyPassword).
+    // 키 파일은 저장소 밖(../running-tale-keys)에 있다. 없으면 release 빌드는 서명 없이 나온다.
+    signingConfigs {
+        local.getProperty("release.storeFile")?.let { path ->
+            create("release") {
+                storeFile = file(path)
+                storePassword = local.getProperty("release.storePassword")
+                keyAlias = local.getProperty("release.keyAlias")
+                keyPassword = local.getProperty("release.keyPassword")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.findByName("release")
+        }
+    }
 
     defaultConfig {
         applicationId = "com.runningtale.app"
@@ -19,9 +42,6 @@ android {
 
         // Pleos TTS 앱 인증 키. 커밋하지 않도록 local.properties에 둔다:
         //   pleos.tts.clientId=...  /  pleos.tts.clientSecret=...
-        val local = Properties().apply {
-            rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use(::load)
-        }
         buildConfigField("String", "PLEOS_TTS_CLIENT_ID", "\"${local.getProperty("pleos.tts.clientId", "")}\"")
         buildConfigField("String", "PLEOS_TTS_CLIENT_SECRET", "\"${local.getProperty("pleos.tts.clientSecret", "")}\"")
     }
