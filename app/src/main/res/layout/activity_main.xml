@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  그림을 층으로 쌓는다: 배경(교차 페이드) → 날씨·동굴 효과 → 주인공/친구 → 낭독·선택지 → 시연용 신호.
+  Pleos 화면 160dpi라 1dp = 1px. 앱 영역은 클러스터·상태바를 빼고 약 1680×1200.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A8D5A2">
+
+    <ImageView
+        android:id="@+id/backgroundBack"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:id="@+id/backgroundFront"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop" />
+
+    <!-- 비 오는 날 화면을 살짝 어둡게 -->
+    <View
+        android:id="@+id/rainShade"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:background="#55304060" />
+
+    <FrameLayout
+        android:id="@+id/fireflies"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="180dp"
+            android:layout_height="140dp"
+            android:layout_marginStart="360dp"
+            android:layout_marginTop="200dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/fx_firefly0" />
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="100dp"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="120dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/fx_firefly1" />
+
+        <ImageView
+            android:layout_width="170dp"
+            android:layout_height="120dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="300dp"
+            android:layout_marginEnd="560dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/fx_firefly2" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/wind"
+        android:layout_width="200dp"
+        android:layout_height="130dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="470dp"
+        android:alpha="0"
+        android:importantForAccessibility="no"
+        android:src="@drawable/fx_wind" />
+
+    <ImageView
+        android:id="@+id/hero"
+        android:layout_width="520dp"
+        android:layout_height="380dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="200dp"
+        android:layout_marginBottom="220dp"
+        android:contentDescription="보리"
+        android:scaleType="fitEnd"
+        android:src="@drawable/hero_carriage" />
+
+    <ImageView
+        android:id="@+id/companion"
+        android:layout_width="560dp"
+        android:layout_height="400dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="70dp"
+        android:layout_marginBottom="220dp"
+        android:importantForAccessibility="no"
+        android:scaleType="fitEnd"
+        android:visibility="invisible" />
+
+    <!-- 비 줄기: 화면보다 길게 깔고 아래로 흘린다 -->
+    <View
+        android:id="@+id/rain"
+        android:layout_width="match_parent"
+        android:layout_height="2640dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/sceneTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="28dp"
+        android:background="@drawable/panel"
+        android:paddingHorizontal="28dp"
+        android:paddingVertical="10dp"
+        android:textColor="#5B3A1E"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <!-- 시작 화면 -->
+    <LinearLayout
+        android:id="@+id/startButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="820dp"
+            android:layout_height="470dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ui_logo" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/vehicleButton"
+                android:layout_width="440dp"
+                android:layout_height="250dp"
+                android:layout_marginEnd="32dp"
+                android:background="@null"
+                android:contentDescription="@string/start_vehicle"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ui_btn_start" />
+
+            <ImageButton
+                android:id="@+id/startButton"
+                android:layout_width="440dp"
+                android:layout_height="250dp"
+                android:background="@null"
+                android:contentDescription="@string/start_demo"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ui_btn_demo" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 낭독과 선택지 -->
+    <LinearLayout
+        android:id="@+id/storyPanel"
+        android:layout_width="1280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="56dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <!-- 선택지 음성 대답을 듣는 중 -->
+        <TextView
+            android:id="@+id/listenHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/panel"
+            android:paddingHorizontal="28dp"
+            android:paddingVertical="8dp"
+            android:text="@string/listening"
+            android:textColor="#5B3A1E"
+            android:textSize="26sp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/choices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:orientation="horizontal"
+            android:visibility="gone" />
+
+        <HorizontalScrollView
+            android:id="@+id/journeyScroll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/journey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/panel"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp" />
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/narration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/panel"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.25"
+            android:paddingHorizontal="44dp"
+            android:paddingVertical="24dp"
+            android:textColor="#3E2A14"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+    <!-- 진행률: 길 위를 수레 아이콘이 따라간다 -->
+    <FrameLayout
+        android:id="@+id/progressTrack"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_gravity="bottom">
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="14dp"
+            android:layout_gravity="bottom"
+            android:max="100"
+            android:progressTint="#F2A65A" />
+
+        <ImageView
+            android:id="@+id/progressMarker"
+            android:layout_width="96dp"
+            android:layout_height="64dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/hero_carriage" />
+    </FrameLayout>
+
+    <!-- 시연용: 지금 들어오는 주행 신호. 심사위원이 데이터와 장면 변화를 바로 연결하도록. -->
+    <TextView
+        android:id="@+id/signalOverlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:background="#99000000"
+        android:fontFamily="monospace"
+        android:padding="12dp"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+</FrameLayout>

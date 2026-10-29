@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">달리는 동화</string>
+    <string name="start_vehicle">모험 시작</string>
+    <string name="start_demo">데모 코스</string>
+    <string name="listening">🎙 듣고 있어요! 말로 대답해도 돼요</string>
+</resources>

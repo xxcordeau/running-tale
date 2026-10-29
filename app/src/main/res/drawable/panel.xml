@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 낭독·장면 이름 바탕: 양피지 느낌의 둥근 패널 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#EEFFF8E7" />
+    <corners android:radius="36dp" />
+    <stroke
+        android:width="4dp"
+        android:color="#C9A06A" />
+</shape>
