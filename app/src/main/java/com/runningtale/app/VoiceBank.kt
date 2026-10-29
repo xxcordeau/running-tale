@@ -9,6 +9,7 @@ import com.runningtale.story.themes.ForestTheme
  * 테마 구조에서 문장을 꺼내 연결하므로 문장 순서가 바뀌어도 맞는다. 녹음이 없는 문장은 TTS로 읽는다.
  *
  * 회전 예고(`{distance}`)는 거리마다 문장이 달라 녹음 대신 TTS로 읽는다.
+ * 비 시작(녹음은 "우산을 펼쳤어요")과 올빼미 등장(녹음은 "부엉이 할아버지")은 문장이 바뀌어 다시 녹음할 때까지 TTS로 읽는다.
  */
 object VoiceBank {
     private val byText: Map<String, Int> = build(ForestTheme)
@@ -30,21 +31,20 @@ object VoiceBank {
         put(rule(EventKey.TURNED_RIGHT)?.narration, R.raw.voice_turned_right)
         put(rule(EventKey.TURNED_LEFT)?.narration, R.raw.voice_turned_left)
 
-        val stopVoices = listOf(
+        val stopVoices = listOf<Triple<Int?, Int, Int>>(
             Triple(R.raw.voice_stop_dragon, R.raw.voice_dragon_apple, R.raw.voice_dragon_song),
             Triple(R.raw.voice_stop_fox, R.raw.voice_fox_moon, R.raw.voice_fox_firefly),
-            Triple(R.raw.voice_stop_owl, R.raw.voice_owl_flower, R.raw.voice_owl_stream),
+            Triple(null, R.raw.voice_owl_flower, R.raw.voice_owl_stream),
         )
         stopVoices.forEachIndexed { i, (stop, first, second) ->
             val beat = rule(EventKey.STOP, i) ?: return@forEachIndexed
-            put(beat.narration, stop)
+            stop?.let { put(beat.narration, it) }
             put(beat.choice?.options?.getOrNull(0)?.narration, first)
             put(beat.choice?.options?.getOrNull(1)?.narration, second)
         }
 
         put(rule(EventKey.RESUME)?.narration, R.raw.voice_resume)
         put(theme.resumeWithoutAnswer.narration, R.raw.voice_resume_no_answer)
-        put(rule(EventKey.RAIN_START)?.narration, R.raw.voice_rain_start)
         put(rule(EventKey.RAIN_STOP)?.narration, R.raw.voice_rain_stop)
         put(rule(EventKey.TUNNEL_IN)?.narration, R.raw.voice_tunnel_in)
         put(rule(EventKey.TUNNEL_OUT)?.narration, R.raw.voice_tunnel_out)

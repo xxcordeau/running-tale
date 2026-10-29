@@ -10,7 +10,9 @@ NAMES = [
     'stop_owl', 'owl_flower', 'owl_stream', 'resume', 'resume_no_answer',
     'rain_start', 'rain_stop', 'tunnel_in', 'tunnel_out', 'milestone_half', 'milestone_flag', 'ending',
 ]
-SKIP = {'turn_ahead_right', 'turn_ahead_left'}
+# turn_ahead: {distance}가 들어가 TTS로 읽음. rain_start: 녹음은 '우산을 펼쳤어요'인데 그림이 비 맞는 수레로 바뀌어 TTS로 읽음.
+# stop_owl: 녹음은 '부엉이 할아버지'인데 이름을 올빼미로 바꿔 TTS로 읽음
+SKIP = {'turn_ahead_right', 'turn_ahead_left', 'rain_start', 'stop_owl'}
 src, out = sys.argv[1], sys.argv[2]
 os.makedirs(out, exist_ok=True)
 with zipfile.ZipFile(src) as z:

@@ -32,6 +32,8 @@ class MainActivity : Activity() {
     private lateinit var journeyScroll: View
     private lateinit var journey: LinearLayout
     private lateinit var signalOverlay: TextView
+    private lateinit var eventCaption: TextView
+    private val hideCaption = Runnable { eventCaption.visibility = View.GONE }
 
     private lateinit var narrator: Narrator
     private lateinit var soundtrack: Soundtrack
@@ -56,6 +58,7 @@ class MainActivity : Activity() {
         journeyScroll = findViewById(R.id.journeyScroll)
         journey = findViewById(R.id.journey)
         signalOverlay = findViewById(R.id.signalOverlay)
+        eventCaption = findViewById(R.id.eventCaption)
         listenHint = findViewById(R.id.listenHint)
 
         // 내비 안내 등에 소리를 뺏기면 낭독도 멈춘다.
@@ -139,7 +142,9 @@ class MainActivity : Activity() {
 
     /** 알아들으면 고르고, 못 알아들으면 몇 번 더 듣는다. 버튼은 그동안에도 누를 수 있다. */
     private fun onHeard(text: String) {
+        val options = engine.state.openChoice?.options.orEmpty()
         val chosen = engine.chooseBySpeech(text)
+        showCaption(EventCaption.heard(text, chosen?.let { s -> options.firstOrNull { it.narration == s.narration }?.label }))
         if (chosen != null) {
             render(chosen)
         } else {
@@ -154,6 +159,7 @@ class MainActivity : Activity() {
         stage.setMoving(abs(snapshot.speedKmh ?: 0f) >= MOVING_KMH)
         stage.setSpeed(snapshot.speedKmh)
         for (event in detector.onSnapshot(snapshot)) {
+            EventCaption.of(event, snapshot)?.let(::showCaption)
             val before = engine.state.narration
             // 속도 낭독은 곁가지라 이야기 낭독을 끊지 않는다.
             val interrupt = event !is DrivingEvent.SpeedChanged
@@ -231,6 +237,15 @@ class MainActivity : Activity() {
         }
     }
 
+    /** 신호 표시를 켠 시연 때만 자막을 잠깐 띄운다 (움직임 없이 나타났다 사라짐). */
+    private fun showCaption(text: String) {
+        if (signalOverlay.visibility != View.VISIBLE) return
+        eventCaption.text = text
+        eventCaption.visibility = View.VISIBLE
+        eventCaption.removeCallbacks(hideCaption)
+        eventCaption.postDelayed(hideCaption, CAPTION_MS)
+    }
+
     private fun showSignal(s: DrivingSnapshot) {
         signalOverlay.text = buildString {
             appendLine("차속  ${s.speedKmh?.let { "%.0f km/h".format(it) } ?: "-"}")
@@ -247,6 +262,7 @@ class MainActivity : Activity() {
         const val CAR_SPEED = "android.car.permission.CAR_SPEED"
         const val REQUEST_CAR_SPEED = 1
         const val MAX_LISTEN_TRIES = 3
+        const val CAPTION_MS = 5000L
         /** 이 속도부터는 주행 중으로 보고 애니메이션을 멈춘다. */
         const val MOVING_KMH = 3f
     }

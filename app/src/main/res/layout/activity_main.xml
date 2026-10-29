@@ -85,6 +85,18 @@
         android:scaleType="fitEnd"
         android:src="@drawable/hero_carriage" />
 
+    <!-- 하늘에 뜨는 것(무지개). 친구 자리와 따로 둔다 -->
+    <ImageView
+        android:id="@+id/sky"
+        android:layout_width="720dp"
+        android:layout_height="290dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="110dp"
+        android:layout_marginEnd="150dp"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:visibility="invisible" />
+
     <ImageView
         android:id="@+id/companion"
         android:layout_width="560dp"
@@ -101,6 +113,21 @@
         android:id="@+id/rain"
         android:layout_width="match_parent"
         android:layout_height="2640dp"
+        android:visibility="gone" />
+
+    <!-- 시연용 자막: 어떤 차 신호가 어떤 사건이 됐는지. 신호 표시가 켜져 있을 때만 -->
+    <TextView
+        android:id="@+id/eventCaption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="32dp"
+        android:background="#CC2B1D10"
+        android:paddingHorizontal="28dp"
+        android:paddingVertical="12dp"
+        android:textColor="#FFF4D6"
+        android:textSize="26sp"
+        android:textStyle="bold"
         android:visibility="gone" />
 
     <TextView

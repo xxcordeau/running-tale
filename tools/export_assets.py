@@ -30,7 +30,6 @@ for key, f in {
 # 한 장짜리 캐릭터·UI
 for key, f, m in [
     ('hero_carriage', '분홍 후드 꼬마의 모험 마차.png', 900),
-    ('hero_rain', '비 오는 날 우산 쓴 꼬마 탐험가.png', 800),
     ('cameo_fox_gift', '여우가 건네는 보석 선물_超碰.png', 800),
     ('cameo_fox_fireflies', '반짝이는 반딧불이와 숲속 친구들.png', 800),
     ('cameo_owl_butterflies', '다정한 숲속 친구들과 나비들.png', 800),
@@ -52,6 +51,8 @@ def piece(f, box, key, m=600):
     save(trim(load(f).crop(box)), key, m)
 W = '파스텔 날씨와 방향표지 스티커 시트.png'
 piece(W, (20, 36, 752, 330), 'fx_rainbow', 900)
+# 비 오는 날 수레: 그림에 그려진 빗줄기까지 넣으면 수레가 작아 보여서 수레 둘레만 자른다
+piece('비 내리는 멧돼지 마차 여행.png', (200, 40, 1500, 845), 'hero_rain', 900)
 piece(W, (20, 608, 330, 1000), 'fx_sign_left', 500)
 piece(W, (1225, 665, 1510, 1000), 'fx_sign_right', 500)
 piece(W, (650, 505, 900, 680), 'fx_wind', 400)

@@ -42,6 +42,7 @@ data class Choice(val options: List<ChoiceOption>, val prompt: String? = null)
  * [narration]의 `{distance}`는 회전 예고 거리로 바뀐다.
  * [cameo]는 잠깐 등장하는 그림(표지판, 무지개 등). 장면이 바뀌면 사라진다.
  * [before]는 낭독 앞에 읽는 효과음·대사, [after]는 낭독 뒤에 읽는 캐릭터 대사.
+ * [clearCameo]면 장면이 그대로여도 남아 있던 등장 그림을 지운다 (비가 오는데 무지개가 남지 않게).
  */
 data class StoryBeat(
     val narration: String,
@@ -50,6 +51,7 @@ data class StoryBeat(
     val cameo: String? = null,
     val before: List<String> = emptyList(),
     val after: List<String> = emptyList(),
+    val clearCameo: Boolean = false,
 )
 
 /** 주행 사건 → 이야기 토막을 고르는 규칙 키. */

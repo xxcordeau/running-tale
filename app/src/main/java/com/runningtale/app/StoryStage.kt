@@ -29,6 +29,7 @@ class StoryStage(root: View) {
     private val hero: ImageView = root.findViewById(R.id.hero)
     private val wind: View = root.findViewById(R.id.wind)
     private val companion: ImageView = root.findViewById(R.id.companion)
+    private val sky: ImageView = root.findViewById(R.id.sky)
     private val progress: ProgressBar = root.findViewById(R.id.progress)
     private val progressMarker: View = root.findViewById(R.id.progressMarker)
 
@@ -85,24 +86,33 @@ class StoryStage(root: View) {
     fun showCompanion(res: Int?) {
         if (res == companionRes) return
         companionRes = res
-        placeHero(alone = res == null)
-        companion.animate().cancel()
+        // 무지개 같은 하늘 그림은 친구 자리가 아니라 하늘에 띄우고, 수레는 친구가 없을 때처럼 가운데에 둔다.
+        val inSky = res in SKY_ART
+        val friend = res.takeUnless { inSky }
+        placeHero(alone = friend == null)
+        popIn(sky, res.takeIf { inSky })
+        popIn(companion, friend)
+    }
+
+    /** 정차 중이면 통 튀어나오듯, 주행 중이면 그냥 나타난다. */
+    private fun popIn(view: ImageView, res: Int?) {
+        view.animate().cancel()
         if (res == null) {
-            companion.visibility = View.INVISIBLE
+            view.visibility = View.INVISIBLE
             return
         }
-        companion.setImageResource(res)
-        companion.visibility = View.VISIBLE
+        view.setImageResource(res)
+        view.visibility = View.VISIBLE
         if (moving) {
-            companion.alpha = 1f
-            companion.scaleX = 1f
-            companion.scaleY = 1f
+            view.alpha = 1f
+            view.scaleX = 1f
+            view.scaleY = 1f
             return
         }
-        companion.alpha = 0f
-        companion.scaleX = 0.7f
-        companion.scaleY = 0.7f
-        companion.animate().alpha(1f).scaleX(1f).scaleY(1f)
+        view.alpha = 0f
+        view.scaleX = 0.7f
+        view.scaleY = 0.7f
+        view.animate().alpha(1f).scaleX(1f).scaleY(1f)
             .setInterpolator(OvershootInterpolator()).setDuration(500).start()
     }
 
@@ -160,5 +170,8 @@ class StoryStage(root: View) {
 
         /** 친구가 없을 때 수레가 가운데 쪽으로 나서는 거리. 앱 영역 약 1680 폭 기준. */
         const val HERO_ALONE_SHIFT_PX = 260f
+
+        /** 친구 자리 대신 하늘에 띄우는 그림. */
+        val SKY_ART = setOf(R.drawable.fx_rainbow)
     }
 }

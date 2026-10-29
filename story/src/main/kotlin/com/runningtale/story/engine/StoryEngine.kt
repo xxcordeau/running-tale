@@ -145,7 +145,7 @@ class StoryEngine(private val theme: StoryTheme) {
             after = beat.after + listOfNotNull(beat.choice?.prompt?.takeIf { allowChoice }),
             openChoice = if (allowChoice) beat.choice else null,
             // 장면이 있는 토막은 등장 그림을 새로 정하고, 낭독만 바뀌는 토막은 이어간다.
-            cameo = if (beat.scene != null) beat.cameo else beat.cameo ?: base.cameo,
+            cameo = if (beat.scene != null || beat.clearCameo) beat.cameo else beat.cameo ?: base.cameo,
             trail = if (scene != base.scene) base.trail + scene else base.trail,
         )
     }

@@ -46,7 +46,18 @@ class StoryEngineTest {
             engine.onEvent(DrivingEvent.Resumed)
             title
         }
-        assertEquals(listOf("용의 고개", "여우 굴", "부엉이 나무", "용의 고개"), friends)
+        assertEquals(listOf("용의 고개", "여우 굴", "올빼미 나무", "용의 고개"), friends)
+    }
+
+    @Test
+    fun `비가 다시 오면 무지개는 사라진다`() {
+        val engine = StoryEngine(ForestTheme)
+        engine.onEvent(DrivingEvent.Departed)
+        engine.onEvent(DrivingEvent.RainStarted)
+        engine.onEvent(DrivingEvent.RainStopped)
+        assertEquals("rainbow", engine.state.cameo)
+        engine.onEvent(DrivingEvent.RainStarted)
+        assertNull(engine.state.cameo)
     }
 
     @Test

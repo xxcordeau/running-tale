@@ -34,7 +34,7 @@
 ## 실행해 보기
 
 1. Pleos Connect Emulator에 APK 설치: `adb install apk/허정연_달리는동화_release.apk`
-2. **데모 코스**: 3분짜리 주행 시나리오(출발 → 가속 → 우회전 → 터널 → 신호 대기 중 용 등장 → 비 → 도착)를 재생합니다. 오른쪽 위에 지금 들어오는 차 신호가 표시됩니다.
+2. **데모 코스**: 4분 30초짜리 주행 시나리오(출발 → 가속 → 우회전 → 터널 → 정차: 용 → 비 → 정차: 여우 → 무지개 → 정차: 올빼미 → 도착)를 재생합니다. 오른쪽 위에 지금 들어오는 차 신호가, 위쪽 가운데에 "와이퍼 ON → 비가 내려요" 같은 신호→사건 자막이 표시됩니다.
 3. **모험 시작**: Virtual Console의 차속·기어·조향·와이퍼와 내비 경로 신호로 실제 주행처럼 이야기가 흘러갑니다. 장면 제목을 길게 누르면 신호 표시를 켜고 끌 수 있습니다.
 4. 선택지가 열리면 버튼을 누르거나 말로 대답합니다 (에뮬레이터는 Extended controls → Microphone에서 호스트 마이크를 켜야 함).
 
@@ -45,7 +45,7 @@ story/   순수 Kotlin 스토리 엔진 (Android 없이 빌드·테스트)
   signal/  DrivingSnapshot(주행 상태) → EventDetector → DrivingEvent(출발·정차·회전·비·터널…)
   engine/  StoryEngine: 테마의 규칙 테이블대로 장면·낭독·선택지를 만든다
   themes/  ForestTheme (숲속 모험). 테마 추가 = 규칙과 리소스만 추가
-  sim/     DemoCourse: 3분 시연 주행 시나리오
+  sim/     DemoCourse: 4분 30초 시연 주행 시나리오 (세 번 정차)
 app/     Android Automotive 앱
   PleosSignalSource      Pleos Vehicle·NaviHelper + AAOS 차속 → DrivingSnapshot
   SimulatedSignalSource  데모 코스 재생

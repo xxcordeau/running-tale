@@ -160,8 +160,8 @@ val ForestTheme = run {
                     ),
                 ),
                 StoryBeat(
-                    "부엉이 할아버지가 지도를 펼쳤어요. 어느 길로 갈까?",
-                    scene = Scene("부엉이 나무", "🦉", Backdrop.FOREST, art = "owl", npc = "owl"),
+                    "올빼미 할아버지가 지도를 펼쳤어요. 어느 길로 갈까?",
+                    scene = Scene("올빼미 나무", "🦉", Backdrop.FOREST, art = "owl", npc = "owl"),
                     before = listOf(stopSound, "부엉~ 부엉~ 어디 가니?"),
                     after = listOf("흠흠, 어디 보자…", choiceSound),
                     choice = Choice(
@@ -197,8 +197,10 @@ val ForestTheme = run {
             ),
             EventKey.RAIN_START to listOf(
                 StoryBeat(
-                    "후두둑, 숲에 비가 내리기 시작했어요. 보리가 노란 우산을 펼쳤어요!",
+                    "후두둑, 숲에 비가 내리기 시작했어요. 보리도 멧돼지도 비에 촉촉이 젖었어요!",
                     before = listOf(ForestSounds.RAIN_START),
+                    after = listOf("꿀꿀꿀꿀!"),
+                    clearCameo = true,
                 ),
             ),
             EventKey.RAIN_STOP to listOf(
