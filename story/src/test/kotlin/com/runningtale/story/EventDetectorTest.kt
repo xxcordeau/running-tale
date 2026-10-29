@@ -21,21 +21,34 @@ class EventDetectorTest {
         (fromMs..toMs step 500).map { DrivingSnapshot(it, speedKmh = speed, gear = gear) }
 
     @Test
-    fun `내비 경로 없이 출발 후 P단을 1분 유지하면 도착`() {
+    fun `내비 경로 없이 출발 후 P단을 30초 유지하면 친구 없이 바로 도착`() {
         val events = drive(
             DrivingSnapshot(0, speedKmh = 0f, gear = Gear.P),
             DrivingSnapshot(1_000, speedKmh = 20f, gear = Gear.D),
-            *hold(5_000, 65_000, 0f, Gear.P).toTypedArray(),
+            *hold(5_000, 40_000, 0f, Gear.P).toTypedArray(),
         )
         assertEquals(DrivingEvent.Arrived, events.last())
+        assertTrue(DrivingEvent.Stopped !in events)
     }
 
     @Test
-    fun `휴게소에 잠깐 P단으로 세우면 도착이 아니라 정차다`() {
+    fun `경로 없이 잠깐 P단으로 세웠다 가면 도착도 정차도 아니다`() {
         val events = drive(
             DrivingSnapshot(0, speedKmh = 20f, gear = Gear.D),
-            *hold(1_000, 30_000, 0f, Gear.P).toTypedArray(),
-            DrivingSnapshot(31_000, speedKmh = 20f, gear = Gear.D),
+            *hold(1_000, 25_000, 0f, Gear.P).toTypedArray(),
+            DrivingSnapshot(26_000, speedKmh = 20f, gear = Gear.D),
+        )
+        assertTrue(DrivingEvent.Arrived !in events)
+        assertTrue(DrivingEvent.Stopped !in events)
+    }
+
+    @Test
+    fun `경로가 있으면 신호 대기 중 P단도 정차다`() {
+        val route = { t: Long, v: Float, g: Gear -> DrivingSnapshot(t, speedKmh = v, gear = g, remainingDistanceM = 3_000, totalDistanceM = 5_000) }
+        val events = drive(
+            route(0, 20f, Gear.D),
+            *(1_000L..10_000L step 1_000).map { route(it, 0f, Gear.P) }.toTypedArray(),
+            route(11_000, 20f, Gear.D),
         )
         assertTrue(DrivingEvent.Arrived !in events)
         assertEquals(listOf(DrivingEvent.Stopped, DrivingEvent.Resumed), events.filter { it is DrivingEvent.Stopped || it is DrivingEvent.Resumed })

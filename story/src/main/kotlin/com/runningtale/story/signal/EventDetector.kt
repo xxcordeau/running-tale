@@ -100,6 +100,9 @@ class EventDetector(
                 stopped = false
                 out += DrivingEvent.Resumed
             }
+            // 경로 없이 P에 두면 도착 후보라 새 친구를 부르지 않는다 (주차했는데 용이 또 나오고 엔딩이 늦어짐).
+            // 경로가 있으면 신호 대기 중 P도 정차로 센다.
+            s.gear == Gear.P && s.remainingDistanceM == null -> zeroSpeedSinceMs = null
             speed < STOPPED_KMH -> {
                 val since = zeroSpeedSinceMs ?: s.timestampMs.also { zeroSpeedSinceMs = it }
                 if (s.timestampMs - since >= stopHoldMs) {
