@@ -16,7 +16,7 @@ import kotlin.math.abs
 class EventDetector(
     private val stopHoldMs: Long = 5_000,
     private val bandDwellMs: Long = 6_000,
-    private val parkHoldMs: Long = 60_000,
+    private val parkHoldMs: Long = 30_000,
     private val turnAnnounceM: Int = 300,
     private val turnAngleDeg: Float = 90f,
     private val turnRearmDeg: Float = 30f,
